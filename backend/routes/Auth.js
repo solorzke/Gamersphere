@@ -15,7 +15,7 @@ router.post('/authentication', async (req, res) => {
 		const passwordCheck = Bcrypt.compare(req.body.countersign, record.countersign);
 		delete record['countersign'];
 		passwordCheck ? res.json({ valid: true, record }) : res.json({ valid: false });
-		console.log(passwordCheck ? 'Sign-In successful: ' + record : 'Sign-In unsuccessful');
+		console.log(passwordCheck ? '> Sign-In successful: ' + record : '> Sign-In unsuccessful');
 	} catch (error) {
 		console.log(error);
 		res.json({ valid: false, message: error });
@@ -26,7 +26,7 @@ router.post('/authentication', async (req, res) => {
 router.post('/authentication/register', async (req, res) => {
 	try {
 		req = new Sanitize(req).disinfectRequest();
-		console.log(`Requesting: new User registration with info: ${req.body}`);
+		console.log(`> Requesting: new User registration with info:` + req.body);
 		const passwordHash = await Bcrypt.hash(req.body.countersign, 10);
 		console.log(passwordHash);
 		const newUser = new User({
@@ -41,7 +41,7 @@ router.post('/authentication/register', async (req, res) => {
 			email: req.body.email,
 			phone: req.body.phone
 		});
-		const insertUser = await newUser.save();
+		const insertUser = await newUser.save((err, res) => console.log('> User registered: ' + res));
 		res.json({
 			valid: true,
 			_id: insertUser._id.toString(),
@@ -59,7 +59,7 @@ router.post('/authentication/register', async (req, res) => {
 router.post('/verifyUsername', async (req, res) => {
 	try {
 		req = new Sanitize(req).disinfectRequest();
-		console.log(`Requesting: verification of username ${req.body}`);
+		console.log('> Requesting: verification of username' + req.body);
 		const _id = await User.findOne({ username: req.body.username }, '_id');
 		res.json({ valid: true, id: _id });
 	} catch (error) {
@@ -72,10 +72,10 @@ router.post('/verifyUsername', async (req, res) => {
 router.patch('/updatePw/:id', async (req, res) => {
 	try {
 		req = new Sanitize(req).disinfectRequest();
-		console.log(`Requesting: update of password ${req.body}`);
+		console.log('> Requesting: update of password' + req.body);
 		const passwordHash = await Bcrypt.hash(req.body.countersign, 10);
 		await User.updateOne({ _id: req.params.id }, { $set: { countersign: passwordHash } }, (err, user) =>
-			console.log('Password updated')
+			console.log('> Password updated')
 		);
 		res.json({ valid: true });
 	} catch (error) {
@@ -87,8 +87,8 @@ router.patch('/updatePw/:id', async (req, res) => {
 router.delete('/deleteUser', async (req, res) => {
 	try {
 		req = new Sanitize(req).disinfectRequest();
-		console.log('Requesting: Delete  user - ' + req.body);
-		await User.deleteOne({ _id: req.body.id }, (err, res) => console.log('User successfully deleted!'));
+		console.log('> Requesting: Delete  user - ' + req.body);
+		await User.deleteOne({ _id: req.body.id }, (err, res) => console.log('> User successfully deleted!'));
 		res.json({ valid: true });
 	} catch (error) {
 		console.error(error);

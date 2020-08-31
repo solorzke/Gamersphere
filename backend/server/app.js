@@ -10,12 +10,14 @@ app.use(cors());
 app.use(bodyParser.json());
 
 //Import Routes
-const postsRoute = require('../routes/Auth');
-app.use('/', postsRoute);
+const userRoute = require('../routes/Auth');
+const productRoute = require('../routes/Product');
+app.use('/', userRoute);
+app.use('/', productRoute);
 
 //Connect to DB
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true }, () =>
-	console.log('Mongoose is ready to rumble...')
+	console.log('> Mongoose is ready to rumble...')
 );
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, () => console.log(`> Server is running on port ${port}`));
