@@ -1,0 +1,9 @@
+.post {
+	align-items: center;
+	justify-content: center;
+}
+
+.post-img {
+	width: 10px;
+	height: 1px;
+}
